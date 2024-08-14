@@ -1,0 +1,456 @@
+https://www.guru99.com/mongodb-tutorials.html
+root:Bobo_nanu
+ambari:Bobo_nanu
+
+interpreterversion()    /javascript engine version
+show dbs
+db.version()
+db.serverBuildInfo()
+help
+db.help()
+db.stats()
+---
+json types
+var obj = {a:"",b:{},c:[],d:true};
+print(obj);
+typeof obj.a
+
+-----------
+
+typeof db
+db 2tabs
+db
+show collections
+show dbs
+db.version()
+use config
+show collections
+show local show collections
+-----------database-
+use mydb			/create db
+show dbs
+db.createCollection("first")
+show collections
+db		/active db
+db.createCollection("second")
+db.getCollection("first").drop()
+db.third.drop()
+db.dropDatabase()		// deletes active db 
+
+in Robo 3T
+show dbs
+show collections
+db.createCollection("third")
+db.first.remove({})
+--insert a record --------
+db.getCollection("first").insert({})
+db.getCollection("first").find()
+
+db.getCollection("first").insertOne({})
+
+--insert multiple record --------
+db.getCollection("first").insertMany([{},{},{}])
+db.first.find()
+----
+db.getCollection("first").insertOne({
+    })
+--view record --------
+db.getCollection("first").find()
+in robo3T
+db.getCollection("first").find({})
+- --delete records --------
+db.getCollection("first").remove({})
+db.getCollection("first").insertOne({
+   "string":"hello world",
+  "boolean":true,
+  "number":10,
+ "numberInt":NumberInt(100),
+"numberLong":NumberLong(10046576),	
+"date":new Date(),
+"object":{
+    "a":10,
+   "b":true,
+},
+"array":[1,2,3]
+})
+db.first.find()
+--Dupilicate ID error
+
+-- read Documents (returm cursor)
+db.getCollection("first").find(<query>,<fields>)
+-- read 1 document
+db.getCollection("first").findOne(<query>,<fields>)
+
+--cursor : to iterarte through the subset of an object
+begining the cursor point to begining of object
+  it moves one subsubset/subobject of an object
+
+db.createCollection("cursor")
+show collections
+
+var arr = []
+for(let i=1;i<= 100;i++){
+   obj ={index:NumberInt(i)};
+   arr.push(obj)
+}
+db.getCollection("cursor").insertMany(arr)
+db.getCollection("cursor").find({})
+-- within Mongo Shell
+db."cursor".find()
+db.getCollection("cursor").find()
+it
+
+-batch size : number of documents returned by MongoDB server to MongoDB client
+use wireshark to check.IMB or 100 documents. nest batch size upto 4MB or 16MB.
+db.cursor.find().batchsize(30)
+- iterator size : number of document returned by MongoDB client for processing
+
+help
+DBQuery.shellBatchSize = x
+DBQuery.shellBatchSize = 10
+db.getCollection("cursor").find()
+it
+cursor iterate Methods
+
+Assign cursor to the varible
+var c1=db.<collection name>.find<args>
+var c1-db.cursor.find({});
+----iterate one doc
+c1.next()
+
+--check if cursor has next document
+c1.hasNext()
+
+Quatity of documents left in current batch
+c1.objectLeftInBatch()
+c1 		// 20 
+c1.toArray		//returns array	
+
+c1.toArray()
+
+c1.forEach(function)
+c1.forEach(printjson)
+
+printjson		//to see the function
+c1.forEach(d =>print("index is :${d.index}"))
+db.getCollection("cursor").find({}).count()
+db.getCollection("cursor").find({}).limit(2)
+db.getCollection("cursor").find({}).skip(5)
+db.getCollection("cursor").find({}).sort({index:-1})
+c1.count()
+c1.limit(<number>)
+c1.skip(<number)
+c1.sort("fields":1,"field":-1)
+c1.sort({index:1})
+--order of method
+db.cursor.find({}).limit(10).skip(15).sort({index:-1})
+
+---just one docu
+db.cursor.findOne({})
+db.cursor.findOne({"index":5})
+
+-- Empty Query :all documents
+
+db.getCollection("person").find({})
+db.person.count()
+--data prepration
+db.person.insertMany(paste from person.json file)
+-- Equality Query :
+
+filedname1:value1,fieldname2:value2
+, means AND
+db.getCollection("person").find({name:" "})
+db.getCollection("person").find({"age":20})
+
+db.getCollection("person").find({"age":20, "gender":"male"}).count()
+
+--- Operators : add conditions
+$eq,$gt,$lt,$ne,$gte,$lte
+db.getCollection("person").find({"age":{"$gt":20}}).count()
+db.getCollection("person").find({"age":{"$gte":20}}).count()
+db.getCollection("person").find({"age":{"$gte":20,"$lte":50}}).count()
+with string and date
+
+$in, $nin
+db.getCollection("person").find({"age":{"$in":[22,34]}})
+
+$and : combine conditions
+$and :[{condition1},{condition2}]
+
+db.getCollection("person").find({$and :[{"gender":"female},{"age":20}]})
+
+db.getCollection("person").find({$and :[{"gender":"female},{"age":{$gte:20}}]})
+$or
+
+$or :[{condition1},{condition2}]
+db.getCollection("person").find({$or :[{"gender":"female},{"age":20}]})
+
+Query Embedded Document - nested document
+
+use . (dot) notation
+db.getCollection("person").find({"company.location.country":"USA"}).count()
+
+--array
+   -- 1 exact matxg
+db.person.find({tags:[entire 1 array paste]})
+
+-- 1 memeber of array irrespective of posituin on array
+db.person.find({tags:"ad"})
+
+-- by position stats from 0
+db.person.find({tags.0:"ad"})
+Array opertaor $all,$size
+$all 
+
+db.person.find({tags:{"$all":["ad","ut"]}})
+db.person.find({tags:{"$size":4}})
+
+--Query Array Nested documents 
+
+db.friend.find({"friends.name":"Lora"})
+db.friend.find({friends:{name:"Lora","age":23}})
+Projection/Field filter : return few fields 
+add one more object within find({condition},{field})
+1: include field
+0: exclude field
+
+db.person.find({},{name:1,age:1,eyeColor:1})
+
+- $elemMatvh:
+Ar least 1 nested document in the Array must match all condition
+{friends:{$elemMatch:{name:"Bob",registerd:false}}}
+{friends:{$elemMatch:{age:25,registerd:false}}}
+
+------------
+exists
+{tags:{$exists:true}} //tags field is present
+{name:{$exists:false}} //name field is not present
+
+$type : check value type
+
+{name:{$type:2}}   // name is string
+
+------------
+
+
+
+regex
+
+
+--updates
+db.collection.update(
+//query
+{},
+//update
+{},
+//update options(optional)
+{}
+)
+
+db.shoppingCart.insertMany([{index:NumberInt(1)},{index:NumberInt(2)},{index:NumberInt(3)},{index:NumberInt(4)},{index:NumberInt(5)}])
+
+$set : set values
+db.shoppingCart.update(
+{index:3},
+{
+$set:{
+cartId:NumberInt(325),
+customer:{
+name:"Mike Foster",
+email:"mfoster@testmail.com",
+age:NumberInt(27)
+},
+cart:[]
+}})
+
+$unset : remove
+
+db.shoppingCart.update(
+{index:3},
+{
+$unset:{
+cartId:1,
+cart:""
+}
+})
+
+
+--empty query will unset only very first document
+db.shoppingCart.update(
+{},
+{
+$unset:{
+cartId:1,
+cart:""
+}
+})
+
+db.shoppingCart.update({},{$set:{processed:false}})
+
+update multiple update
+db.shoppingCart.update({},{$set:{processed:false}},{multi:true})
+
+--updateOne
+
+db.shoppingCart.updateOne(
+{cardId:325},
+{
+$set:{
+processed:true}
+})
+
+
+---$rename : to rename fieldname
+db.shoppingCart.update(
+{cartId:{$exists:true}},
+{$rename:{cartId:"orderId"}}
+)
+
+db.shoppingCart.updateMany(
+{cart:{$exists:false}},
+{$set:{cart:[]}}
+)
+
+db.shoppingCart.replaceOne(
+{Index:1},
+{index:1,
+processed:true,
+"cart":["item1","item2"]}}
+)
+db.shoppingCart.find({index:1})
+db.shoppingCart.updateMany(
+{cartId:{$exists:true}},
+{$rename:{cartId:"orderId"}}
+)
+
+Array update operator
+---------
+$currentDAte
+db.shoppingCart.updateOne(
+{index:1},
+{$set:{updateAt:new Date()}}
+)
+
+db.shoppingCart.updateMany(
+{updateAt:{$exsists:true}},
+{$currentDate:{updateAt:true}}
+)
+$
+$push : add one or multiple elements to an array. duplicate allowed
+
+db.shoppingCart.updateMany(
+{Index:1},
+{$set:{cartId:NumberInt(561)},
+{$unset:{cart:1}
+}
+)
+
+db.shoppingCart.find()
+
+db.shoppingCart.updateMany(
+{cartId:561},
+{$push:{cart:"item1"}
+}
+)
+
+db.shoppingCart.find()
+db.shoppingCart.updateMany(
+{cartId:561},
+{$push:{cart:"item2"}
+}
+)
+
+db.shoppingCart.find()
+
+db.shoppingCart.updateMany(
+{cartId:561},
+{$push:{cart:{$each:["item3","item4","item5"]}
+}
+)
+
+db.shoppingCart.updateMany(
+{cartId:561},
+{$push:{cart:"item2"}
+}
+)
+-------------
+$addToSet : no dupilcate allowed
+db.shoppingCart.updateMany(
+{cartId:561},
+{$addToSet:{cart:"item1"}
+}
+)
+
+$pull : removes specific / conditioned element
+db.shoppingCart.updateOne(
+{cartId:561},
+{$addToSet:{spentAmount:[NumberInt(400),NumberInt(700),NumberInt(800),NumberInt(200),NumberInt(500)]}
+}
+)
+db.shoppingCart.update(
+{cartId:561},
+{$pull:{spentAmount:{$gt:400}
+}
+)
+$pullAll
+$pop : removes first or last element
+-1 : removes first element
+1: removes last element
+
+
+db.person.aggregate([{$match:{"age":{lte:20}}}])
+
+db.person.aggregate([{$group:{_id:"$gender"}}])
+db.person.aggregate([{$group:{_id:"$eyeColor"}}])
+
+db.person.aggregate([{$group:{_id:"$company.location.country"}}])
+
+db.person.aggregate([{$group:{_id:"$company.location"}}])
+
+db.person.aggregate([{$group:{_id:{eyeColor:"$eyeColor",gender:"$gender"}}}])
+
+db.person.aggregate([{$match:{"age":{$gte:20}}},{$group:{_id:{eyeColor:"$eyeColor",gender:"$gender"}}}])
+
+db.person.aggregate([{$match:{"age":{$gte:20}}},{$group:{_id:{eyeColor:"$eyeColor",gender:"$gender",age:"$age"}}}])
+
+reverse order : nothing
+
+db.person.aggregate([
+
+{$group:{_id:{eyeColor:"$eyeColor",gender:"$gender",age:"$age"}}}
+,{$match:{"age":{$gte:20}}}
+])
+
+to make it work : give ref
+
+db.person.aggregate([
+
+{$group:{_id:{eyeColor:"$eyeColor",gender:"$gender",age:"$age"}}}
+,{$match:{"_id.age":{$gte:20}}}
+
+])
+
+db.person.aggregate([
+{$count:"allDocumentsCount"}
+])
+
+
+db.person.aggregate([{$match:{"age":{$gte:20}}},
+{$group:{_id:{eyeColor:"$eyeColor",gender:"$gender",age:"$age"}}},
+{$count:"cc"}])
+
+
+db.person.aggregate([
+{$group:{_id:{eyeColor:"$eyeColor",gender:"$gender"}}},
+{$count:"cc"}])
+
+db.person.aggregate([
+{$match:{"_id.age":{$gte:20}}},
+{$group:{_id:{eyeColor:"$eyeColor",gender:"$gender",age:"$age"}}}
+{$count:"
+])
+----------------------
+
+mongod --port 27017 --dbpath E:\MongoDB_material\server1 --replSet rs0
+mongod --port 27018 --dbpath E:\MongoDB_material\server2 --replSet rs0
+mongod --port 27019 --dbpath E:\MongoDB_material\server3 --replSet rs0
